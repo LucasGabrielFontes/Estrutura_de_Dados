@@ -10,15 +10,17 @@ struct lista {
     int f;
 };
 
-int menu();
-int insere_inicio (struct lista * );
+void cria_lista(struct lista * );
+int decrementa (int  );
+int incrementa(int  );
 int insere_fim (struct lista * );
-int decrementa_inicio (int  );
-int incrementa_fim(int  );
+int insere_inicio (struct lista * );
 int lista_cheia(struct lista  );
 int lista_vazia(struct lista  );
-void cria_lista(struct lista * );
+int menu();
 void mostra_lista(struct lista  , char * );
+int retira_fim(struct lista * ); 
+int retira_inicio(struct lista *);
 
 int main() {
 
@@ -44,12 +46,12 @@ int main() {
                 if(insere_inicio(&lista_c)) { 
                     strcpy(mensagem, "Elemento inserido com sucesso!");
                 } else {
-                    strcpy(mensagem, "Memoria insuficiente!");
+                    strcpy(mensagem, "Memoria insuficiente ou o indice inserido e invalido!");
                 }
                 system("cls");
                 break;
 
-            case 3: // Insere um elemento no meio da lista
+            case 3: // Insere um elemento no fim da lista
                 if(insere_fim(&lista_c)) { 
                     strcpy(mensagem, "Elemento inserido com sucesso!");
                 } else {
@@ -58,13 +60,32 @@ int main() {
                 system("cls");
                 break;
             
-            case 4: // Mostra todos os elementos da lista
+            case 4:
+                if(retira_inicio(&lista_c)) {
+                    strcpy(mensagem, "Elemento retirado com sucesso!");
+                } else {
+                    strcpy(mensagem, "A lista ja esta vazia ou o indice inserido e invalido!");
+                }
+                system("cls");
+                break;
+
+            case 5:
+                if(retira_fim(&lista_c)) {
+                    strcpy(mensagem, "Elemento retirado com sucesso!");
+                } else {
+                    strcpy(mensagem, "A lista ja esta vazia ou o indice inserido e invalido!");
+                }
+                system("cls");
+                break;
+
+            case 6: // Mostra todos os elementos da lista
                 mostra_lista(lista_c, mensagem); 
                 system("cls");
                 break;
 
             default: // Usuario digitou uma opcao invalida
-                printf("Escolha invalida! Tente novamente: ");
+                strcpy(mensagem, "Opcao invalida! Tente novamente: ");
+                system("cls");
             break;
         }
 
@@ -81,7 +102,9 @@ int menu() {
     printf("1- Criar lista\n");
     printf("2- Inserir elemento no inicio\n");
     printf("3- Inserir elemento no fim\n");
-    printf("4- Mostrar lista\n\n");
+    printf("4- Retirar elemento do inicio\n");
+    printf("5- Retirar elemento do fim\n");
+    printf("6- Mostrar lista\n\n");
     printf("Insira a sua escolha: ");
     scanf("%d", &escolha);
 
@@ -102,8 +125,8 @@ int insere_inicio (struct lista *lista_c) {
         return 1;
     }
 
-    lista_c->dados[decrementa_inicio(lista_c->i)] = num;
-    lista_c->i = decrementa_inicio(lista_c->i);
+    lista_c->dados[decrementa(lista_c->i)] = num;
+    lista_c->i = decrementa(lista_c->i);
     return 1;
 }
 
@@ -121,23 +144,23 @@ int insere_fim (struct lista *lista_c) {
         return 1;
     }
 
-    lista_c->dados[incrementa_fim(lista_c->f)] = num;
-    lista_c->f = incrementa_fim(lista_c->f);
+    lista_c->dados[incrementa(lista_c->f)] = num;
+    lista_c->f = incrementa(lista_c->f);
     return 1;
 }
 
-int decrementa_inicio (int inicio) {
-    if (inicio-1 == -1) return TAM-1;
-    return inicio-1;
+int decrementa (int a) {
+    if (a-1 == -1) return TAM-1;
+    return a-1;
 }
 
-int incrementa_fim(int fim) {
-    if (fim+1 > TAM-1) return 0;
-    return fim+1;
+int incrementa(int a) {
+    if (a+1 > TAM-1) return 0;
+    return a+1;
 }
 
 int lista_cheia(struct lista lista_c) {
-    if (lista_c.i == incrementa_fim(lista_c.f)) return 1;
+    if (lista_c.i == incrementa(lista_c.f)) return 1;
     return 0;
 }
 
@@ -158,27 +181,66 @@ void mostra_lista(struct lista lista_c, char *mensagem) {
 
     if (lista_vazia(lista_c)) return;
 
-    if (lista_c.i == lista_c.f) {
-        sprintf(strNum, "%d", lista_c.dados[lista_c.i]); // O dado do no e tranformado em uma string e armazenado em strNum
-        strcat(mensagem, strNum); // O numero em formato de string e adicionado a mensagem
-        strcat(mensagem, " ");
-        return;
-    }
-
-    if (lista_c.f > lista_c.i) {
-        for (int i = lista_c.i; i-1 != lista_c.f; i = incrementa_fim(i)) {
-            sprintf(strNum, "%d", lista_c.dados[i]); // O dado do no e tranformado em uma string e armazenado em strNum
-            strcat(mensagem, strNum); // O numero em formato de string e adicionado a mensagem
-            strcat(mensagem, " ");
-        }
-        return;
-    }
-
     int i = lista_c.i;
-    do {
+    while (1) {
         sprintf(strNum, "%d", lista_c.dados[i]); // O dado do no e tranformado em uma string e armazenado em strNum
         strcat(mensagem, strNum); // O numero em formato de string e adicionado a mensagem
         strcat(mensagem, " ");
-        i = incrementa_fim(i);
-    } while(i-1 != lista_c.f);  
+
+        if (i == lista_c.f) break;
+
+        i = incrementa(i);
+    }
+
+    // Logica inicial:
+
+    //if (lista_c.i == lista_c.f) {
+    //    sprintf(strNum, "%d", lista_c.dados[lista_c.i]); // O dado do no e tranformado em uma string e armazenado em strNum
+    //    strcat(mensagem, strNum); // O numero em formato de string e adicionado a mensagem
+    //    strcat(mensagem, " ");
+    //    return;
+    //}
+
+    //if (lista_c.f > lista_c.i) {
+    //    for (int i = lista_c.i; i-1 != lista_c.f; i = incrementa(i)) {
+    //        sprintf(strNum, "%d", lista_c.dados[i]); // O dado do no e tranformado em uma string e armazenado em strNum
+    //        strcat(mensagem, strNum); // O numero em formato de string e adicionado a mensagem
+    //        strcat(mensagem, " ");
+    //    }
+    //    return;
+    //}
+
+    //int i = lista_c.i;
+    //do {
+    //    sprintf(strNum, "%d", lista_c.dados[i]); // O dado do no e tranformado em uma string e armazenado em strNum
+    //    strcat(mensagem, strNum); // O numero em formato de string e adicionado a mensagem
+    //    strcat(mensagem, " ");
+    //    i = incrementa(i);
+    //} while(i-1 != lista_c.f);  
+}
+
+int retira_fim(struct lista *lista_c){
+    if (lista_vazia(*lista_c)) return 0;
+
+    if (lista_c->i == lista_c->f) {
+        lista_c->f = -1;
+        lista_c->i = -1;
+        return 1;
+    }
+
+    lista_c->f = decrementa(lista_c->f);
+    return 1;
+}
+
+int retira_inicio(struct lista *lista_c) {
+    if (lista_vazia(*lista_c)) return 0;
+
+    if (lista_c->i == lista_c->f) {
+        lista_c->f = -1;
+        lista_c->i = -1;
+        return 1;
+    }
+
+    lista_c->i = incrementa(lista_c->i);
+    return 1;
 }
