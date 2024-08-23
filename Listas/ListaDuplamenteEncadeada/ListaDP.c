@@ -17,6 +17,7 @@ struct no{ // No de uma lista duplamente encadeada: ponteiro para o elemento ant
 
 ///////////////////////////// Prototipos //////////////////////////////////
 void cria_lista(struct listaDE * );
+void esvazia_lista(struct listaDE *);
 int insere_fim(struct listaDE * );
 int insere_inicio(struct listaDE * );
 int insere_meio(struct listaDE * );
@@ -120,7 +121,7 @@ int main() {
 
     } while (escolha != 0);
 
-    // Esvaziar lista
+    esvazia_lista(&lista);
 
     return 0;
 }
@@ -337,4 +338,17 @@ int remove_meio(struct listaDE *lista) {
     } 
 
     return 0;
+}
+
+void esvazia_lista(struct listaDE *lista){
+
+    struct no *aux = lista->i;
+    while (aux != NULL) {
+        struct no *temp = aux;
+        aux = aux->prox;
+        free(temp);
+    }
+
+    lista->i = NULL;
+    lista->f = NULL;
 }
