@@ -1,4 +1,4 @@
-// Implementacao das principais funcoes aplicadas em uma lista encadeada
+d// Implementacao das principais funcoes aplicadas em uma lista encadeada
 // Autor: Lucas Gabriel Fontes da Silva
 
 // Bibliotecas
