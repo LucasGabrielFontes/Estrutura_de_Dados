@@ -71,7 +71,7 @@ int main() {
     return 0;
 }
 
-void mostra_fila(struct Fila fila, char *mensagem) { // UTILIZO ESSA FUNCAO UNICA E EXCLUSIVAMENTE PARA MELHOR VISUALIZAR O QUE ACONTECE A CADA PASSO COM A LISTA. EM UMA APLICACAO REAL, ESSA FUNCAO NAO EXISTIRIA
+void mostra_fila(struct Fila fila, char *mensagem) { 
 
     strcpy(mensagem, "Lista: "); // Mensagem armazera todos os elementos da lista como string
     char strNum[10];
