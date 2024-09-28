@@ -8,17 +8,20 @@ struct no {
 };
 
 int arvore_vazia(struct no *);
-struct no* busca (struct no *arvore, int num);
 int calcula_altura(struct no *);
-int conta_nos(struct no *);
+void cria_arquivo_dot(struct no *);
 struct no * cria_arvore();
 struct no * cria_no(int , struct no *, struct no *);
+int fator_balanceamento(struct no *);
 struct no* free_arvore(struct no *);
+void gera_dot (struct no *, FILE *);
 struct no* insere (struct no *, int );
 int max(int , int);
 void mostra_arvore_in(struct no *);
 void mostra_arvore_pre(struct no *);
 void mostra_arvore_pos(struct no *);
+struct no* rotacao_a_esquerda(struct no *);
+struct no* rotacao_a_direita(struct no *);
 
 int main() {
 
@@ -29,30 +32,53 @@ int main() {
     arvore = insere(arvore, 3);
     arvore = insere(arvore, 7);
     arvore = insere(arvore, 4);
+    arvore = insere(arvore, 2);
 
-    printf("Arvore infix: ");
-    mostra_arvore_in(arvore);
-    printf("\n");
-
-    printf("Arvore prefix: ");
-    mostra_arvore_pre(arvore);
-    printf("\n");
-
-    printf("Arvore posfix: ");
-    mostra_arvore_pos(arvore);
-    printf("\n");
-
-    printf("\nAltura da arvore: %d\n", calcula_altura(arvore));
-    printf("\nQuantidade de nos da arvore: %d\n", conta_nos(arvore));
+    cria_arquivo_dot(arvore);
 
     arvore = free_arvore(arvore);
 
     return 0;
 }
 
-struct no* insere (struct no *arvore, int num) { // Insere ordenadamente na arvore
+// Ao gerar o arquivo .dot, rode no terminal: dot -Tpng NOMEDOARQUIVO.dot -o NOMEDOARQUIVO.png
+void cria_arquivo_dot(struct no *raiz) {
 
-    if (arvore_vazia(arvore)) {
+    FILE *file = fopen("arvore.dot", "w");
+    if (file == NULL) {
+        printf("Erro ao criar o arquivo!");
+        return;
+    }
+
+    fprintf(file, "digraph G {\n");
+    gera_dot(raiz, file);
+    fprintf(file, "}\n");
+
+    fclose(file);
+
+}
+
+void gera_dot (struct no *raiz, FILE *file) {
+
+    if (!arvore_vazia(raiz)) {
+
+        if (raiz->esq != NULL) {
+            fprintf(file, "    %d -> %d;\n", raiz->info, raiz->esq->info);
+            gera_dot(raiz->esq, file);
+        }
+
+        if (raiz->dir != NULL) {
+            fprintf(file, "    %d -> %d;\n", raiz->info, raiz->dir->info);
+            gera_dot(raiz->dir, file);
+        } 
+
+    }
+
+}
+
+struct no* insere (struct no *raiz, int num) { // Insere ordenadamente na arvore
+
+    if (arvore_vazia(raiz)) {
         struct no *novo = (struct no *) malloc (sizeof(struct no));
         if (novo == NULL) return NULL;
         novo->info = num;
@@ -61,26 +87,57 @@ struct no* insere (struct no *arvore, int num) { // Insere ordenadamente na arvo
         return novo;
     }
 
-    if (num < arvore->info) {
-        arvore->esq = insere(arvore->esq, num);
+    if (num < raiz->info) {
+        raiz->esq = insere(raiz->esq, num);
     } else {
-        arvore->dir = insere(arvore->dir, num);
+        raiz->dir = insere(raiz->dir, num);
     }
 
-    return arvore;
+    int balanceamento = fator_balanceamento(raiz);
+
+    if (balanceamento > 1) {
+        return rotacao_a_direita(raiz);
+    } 
+
+    if (balanceamento < -1) {
+        return rotacao_a_esquerda(raiz);
+    }
+
+    return raiz;
 }
 
-struct no* busca (struct no *arvore, int num) {
+struct no* rotacao_a_esquerda(struct no *raiz) {
 
-    if (arvore == NULL) return NULL;
+    struct no *no;
 
-    if (num < arvore->info) {
-        return busca(arvore->esq, num);
-    } else if (num > arvore->info) {
-        return busca(arvore->dir, num);
+    no = raiz->dir;
+    raiz->dir = no->esq;
+    no->esq = raiz;
+    raiz = no;
+    return raiz;
+
+}
+
+struct no* rotacao_a_direita(struct no *raiz) {
+
+    struct no *no;
+
+    no = raiz->esq;
+    raiz->esq = no->dir;
+    no->dir = raiz;
+    raiz = no;
+    return raiz;
+
+}
+
+int fator_balanceamento(struct no *raiz) {
+
+    if (!arvore_vazia(raiz)) {
+        return calcula_altura(raiz->esq) - calcula_altura(raiz->dir);
     } else {
-        return arvore;
+        return 0;
     }
+
 }
 
 int calcula_altura(struct no *arvore) {
@@ -130,36 +187,8 @@ void mostra_arvore_in(struct no *raiz) { // Percorre simetricamente
     }
 }
 
-void mostra_arvore_pre (struct no* raiz) {
-    if (!arvore_vazia(raiz)) {
-        printf("%d ", raiz->info);
-        mostra_arvore_pre(raiz->esq);
-        mostra_arvore_pre(raiz->dir);
-    }
-}
-
-void mostra_arvore_pos (struct no *raiz) {
-    if (!arvore_vazia(raiz)) {
-        mostra_arvore_pos(raiz->esq);
-        mostra_arvore_pos(raiz->dir);
-        printf("%d ", raiz->info);
-    }
-}
-
 struct no *cria_arvore() {
     return NULL;
-}
-
-struct no *cria_no(int info, struct no *esq, struct no *dir) {
-
-    struct no *novo = (struct no *) malloc(sizeof(struct no));
-    if (novo == NULL) return NULL;
-
-    novo->info = info;
-    novo->esq = esq;
-    novo->dir = dir;
-
-    return novo;
 }
 
 int arvore_vazia(struct no *arvore) {
