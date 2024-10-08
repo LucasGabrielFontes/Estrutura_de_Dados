@@ -8,6 +8,7 @@ struct no {
 };
 
 int arvore_vazia(struct no *);
+struct no* balanceia(struct no *, int );
 int calcula_altura(struct no *);
 void cria_arquivo_dot(struct no *);
 struct no * cria_arvore();
@@ -27,12 +28,13 @@ int main() {
 
     struct no *arvore = cria_arvore();
 
-    arvore = insere(arvore, 6);
-    arvore = insere(arvore, 5);
-    arvore = insere(arvore, 3);
-    arvore = insere(arvore, 7);
-    arvore = insere(arvore, 4);
+    arvore = insere(arvore, 1);
     arvore = insere(arvore, 2);
+    arvore = insere(arvore, 3);
+    arvore = insere(arvore, 4);
+    arvore = insere(arvore, 5);
+    arvore = insere(arvore, 6);
+    arvore = insere(arvore, 7);
 
     cria_arquivo_dot(arvore);
 
@@ -95,15 +97,41 @@ struct no* insere (struct no *raiz, int num) { // Insere ordenadamente na arvore
 
     int balanceamento = fator_balanceamento(raiz);
 
-    if (balanceamento > 1) {
-        return rotacao_a_direita(raiz);
-    } 
-
-    if (balanceamento < -1) {
-        return rotacao_a_esquerda(raiz);
+    if (abs(balanceamento) > 1) {
+        raiz = balanceia(raiz, balanceamento);
     }
 
     return raiz;
+}
+
+struct no* balanceia(struct no *raiz, int FB) {
+
+    if (FB > 1) { // Eh necessario fazer uma rotacao a direita na raiz
+
+        int FB_filho = fator_balanceamento(raiz->esq);
+
+        if (FB_filho < 0) { // Sinais diferentes. Nesse caso: rotacao a esquerda em raiz->esq e depois rotacao a direita na raiz
+            raiz->esq = rotacao_a_esquerda(raiz->esq);
+            return rotacao_a_direita(raiz);
+        } else { // Apenas uma rotacao simples a direita na raiz
+            return rotacao_a_direita(raiz);
+        }
+
+    } else if (FB < -1) { // Eh necessario fazer uma rotacao a esquerda na raiz
+
+        int FB_filho = fator_balanceamento(raiz->dir);
+
+        if (FB_filho >= 0) { // Sinais diferentes. Nesse caso: rotacao a direita em raiz->dir e depois rotacao a esquerda em na raiz
+            raiz->dir = rotacao_a_direita(raiz->dir);
+            return rotacao_a_esquerda(raiz);
+        } else { // Apenas uma rotacao simples a esquerda na raiz
+            return rotacao_a_esquerda(raiz);
+        }
+
+    }
+
+    return raiz;
+
 }
 
 struct no* rotacao_a_esquerda(struct no *raiz) {
