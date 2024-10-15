@@ -24,11 +24,18 @@ int main() {
 
     struct no *arvore = cria_arvore();
 
-    arvore = insere(arvore, 6);
-    arvore = insere(arvore, 5);
-    arvore = insere(arvore, 3);
-    arvore = insere(arvore, 7);
-    arvore = insere(arvore, 4);
+    arvore = insere(arvore, 15);
+    arvore = insere(arvore, 22);
+    arvore = insere(arvore, 12);
+    arvore = insere(arvore, 14);
+    arvore = insere(arvore, 17);
+    arvore = insere(arvore, 10);
+    arvore = insere(arvore, 24);
+    arvore = insere(arvore, 19);
+    arvore = insere(arvore, 21);
+    arvore = insere(arvore, 11);
+    arvore = insere(arvore, 18);
+    arvore = insere(arvore, 16);
 
     printf("Arvore infix: ");
     mostra_arvore_in(arvore);
